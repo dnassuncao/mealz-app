@@ -15,28 +15,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.dnassuncao.mealzapp.model.response.MealResponse
-import br.com.dnassuncao.mealzapp.ui.theme.MealzAppTheme
 import coil.compose.AsyncImage
 
 @Composable
-fun MealsCategoriesScreen() {
+fun MealsCategoriesScreen(navigationCallback: (String) -> Unit) {
 
     val viewModel: MealCategoriesViewModel = viewModel()
     val meals = viewModel.mealsState.value
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         items(meals) { meal ->
-            MealCategory(meal = meal)
+            MealCategory(meal = meal, navigationCallback)
         }
     }
 }
 
 @Composable
-fun MealCategory(meal: MealResponse) {
+fun MealCategory(meal: MealResponse, navigationCallback: (String) -> Unit) {
 
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -46,11 +44,11 @@ fun MealCategory(meal: MealResponse) {
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 16.dp)
+            .clickable { navigationCallback(meal.id) }
     ) {
         Row(
             modifier = Modifier.animateContentSize()
         ) {
-            // Image
             AsyncImage(
                 model = meal.imageUrl,
                 contentDescription = null,
@@ -90,20 +88,5 @@ fun MealCategory(meal: MealResponse) {
                     .clickable { isExpanded = !isExpanded }
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MealzAppTheme {
-        MealCategory(
-            MealResponse(
-                "1",
-                "Beef",
-                "Pork Beef",
-                "https://www.themealdb.com/images/category/beef.png"
-            )
-        )
     }
 }
