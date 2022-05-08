@@ -88,3 +88,5 @@ lint/tmp/
 .idea/compiler.xml
 .idea/misc.xml
 gradle/wrapper/gradle-wrapper.jar
+.idea/inspectionProfiles/Project_Default.xml
+.idea/deploymentTargetDropDown.xml
