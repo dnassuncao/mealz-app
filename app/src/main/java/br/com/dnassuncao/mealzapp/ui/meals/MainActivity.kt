@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.dnassuncao.mealzapp.ui.theme.MealzAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MealsCategoriesScreen() {
-    val viewModel = MealCategoriesViewModel()
+    val viewModel : MealCategoriesViewModel = viewModel()
     Text(text = "Hello Compose")
 }
 
