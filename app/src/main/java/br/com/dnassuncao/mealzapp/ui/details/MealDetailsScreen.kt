@@ -1,79 +1,80 @@
 package br.com.dnassuncao.mealzapp.ui.details
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import br.com.dnassuncao.mealzapp.model.response.MealResponse
 import coil.compose.AsyncImage
+import kotlin.math.min
 
 @Composable
 fun MealDetailsScreen(meal: MealResponse?) {
 
-    var profilePictureState by remember { mutableStateOf(MealProfilePictureState.Normal) }
-    val transition = updateTransition(targetState = profilePictureState, label = "")
-    val imageSizeDp by transition.animateDp(targetValueByState = { it.size }, label = "")
-    val color by transition.animateColor(targetValueByState = { it.color }, label = "")
-    val widthSize by transition.animateDp(targetValueByState = { it.borderWidth }, label = "")
+    val scrollState = rememberLazyListState()
+    val offset = min(
+        1f,
+        1 - (scrollState.firstVisibleItemScrollOffset) / 600f + scrollState.firstVisibleItemIndex
+    )
+    val size by animateDpAsState(targetValue = max(100.dp, 140.dp * offset))
 
-    Column {
-        Row {
-            Card(
-                modifier = Modifier.padding(16.dp),
-                shape = CircleShape,
-                border = BorderStroke(
-                    width = widthSize,
-                    color = color
-                )
-            ) {
-                AsyncImage(
-                    model = meal?.imageUrl,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(imageSizeDp)
-                        .padding(8.dp)
-                )
+    Surface(color = MaterialTheme.colors.background) {
+        Column {
+            Surface(elevation = 4.dp) {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Card(
+                        modifier = Modifier.padding(16.dp),
+                        shape = CircleShape,
+                        border = BorderStroke(
+                            width = 2.dp,
+                            color = Color.Green
+                        )
+                    ) {
+                        AsyncImage(
+                            model = meal?.imageUrl,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(size)
+                        )
+                    }
+                    Text(
+                        text = meal?.name ?: "default name",
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
             }
-            Text(
-                text = meal?.name ?: "default name",
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.CenterVertically)
-            )
-        }
-        Button(
-            modifier = Modifier
-                .padding(16.dp),
-            onClick = {
-                profilePictureState =
-                    if (profilePictureState == MealProfilePictureState.Normal)
-                        MealProfilePictureState.Expanded
-                    else MealProfilePictureState.Normal
-            }) {
-            Text("Change state of meal profile picture")
+
+            val dummyContentList = (0..100).map { "Item list $it" }
+            LazyColumn(state = scrollState) {
+                items(dummyContentList) { dummyItem ->
+                    Text(text = dummyItem, Modifier.padding(24.dp))
+                }
+            }
         }
     }
 }
